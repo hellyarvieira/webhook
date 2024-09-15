@@ -1,15 +1,11 @@
-import os
-from flask import Flask, request, jsonify
+from flask import request, jsonify
 
-app = Flask(__name__)
+@app.route('/webhook', methods=['GET'])
+def verify_webhook():
+    verify_token = 'meu_token_secreto_123'  # Este é o token que você inventa e define
+    token = request.args.get('hub.verify_token')
+    challenge = request.args.get('hub.challenge')
 
-@app.route('/webhook', methods=['POST'])
-def webhook():
-    data = request.json
-    # Processa os dados recebidos
-    print(f"Recebido: {data}")
-    return jsonify({"status": "received"}), 200
-
-if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
+    if token == verify_token:
+        return challenge
+    return 'Token inválido', 403
